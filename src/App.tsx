@@ -2,13 +2,21 @@ import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import { invoke } from '@tauri-apps/api/core'
 import './App.css'
-import { checkForUpdates } from './updateChecker'
+import { checkForUpdates, fetchAppVersion } from './updateChecker'
 
 function App() {
   const [greetMsg, setGreetMsg] = useState('')
   const [name, setName] = useState('')
+  const [appVersion, setAppVersion] = useState('')
+
+  const getAppVersion = async () => {
+    const version = await fetchAppVersion()
+    setAppVersion(version)
+  }
   useEffect(() => {
     checkForUpdates()
+
+    getAppVersion()
   }, [])
 
   async function greet() {
@@ -48,6 +56,7 @@ function App() {
         <button type="submit">Greet</button>
       </form>
       <p>{greetMsg}</p>
+      <p>{appVersion}</p>
     </main>
   )
 }

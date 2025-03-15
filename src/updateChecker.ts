@@ -1,5 +1,6 @@
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { getVersion } from "@tauri-apps/api/app";
 
 export async function checkForUpdates() {
   try {
@@ -30,5 +31,16 @@ export async function checkForUpdates() {
     }
   } catch (error) {
     console.error("Update check failed", error);
+  }
+}
+
+
+export const fetchAppVersion = async () => {
+  try {
+    const appVersion = await getVersion()
+    return appVersion;
+  } catch (error) {
+    console.error("Failed to fetch app version:", error);
+    return 'Failed to get version'
   }
 }
