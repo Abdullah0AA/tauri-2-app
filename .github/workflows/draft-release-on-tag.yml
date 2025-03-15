@@ -22,24 +22,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      - name: get version from tag
-        run: echo "PACKAGE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-
       - name: create GitHub release
         id: create-release
         uses: actions/github-script@v6
         with:
           script: |
+            const tagName = process.env.GITHUB_REF_NAME;
+            const releaseName = `Desktop App ${tagName}`;
+
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: process.env.GITHUB_REF_NAME,
-              name: `Desktop App v${process.env.PACKAGE_VERSION}`,
+              tag_name: tagName,
+              name: releaseName,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
               prerelease: false
@@ -67,17 +62,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      # ✅ Cache Rust dependencies to speed up builds
-      - name: Install sccache
-        run: |
-          cargo install sccache || true
-          echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -116,14 +116,13 @@ jobs:
         id: publish-release
         uses: actions/github-script@v6
         env:
-          release_id: ${{ needs.create-release.outputs.release_id }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           script: |
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: process.env.release_id,
+              release_id: "${{ needs.create-release.outputs.release_id }}",
               draft: false,
               prerelease: false
             })
