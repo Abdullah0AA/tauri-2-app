@@ -10,7 +10,7 @@ const HomePage = (): JSX.Element => {
         exit={{ opacity: 0 }} // ✅ Fade out when navigating away
         transition={{ duration: 0.5 }} // ✅ Smooth 0.5s transition
       >
-        <PageTitle title='Welcome to this app' />
+        <PageTitle title="Home Page" />
       </motion.div>
     </div>
   )

@@ -61,7 +61,6 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
