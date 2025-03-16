@@ -109,8 +109,6 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}
-      - name: Debug Rust build output
-        run: ls -lah target/release/ || echo "Rust build directory is missing"
 
   publish-release:
     permissions:
