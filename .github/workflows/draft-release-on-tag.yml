@@ -65,9 +65,6 @@ jobs:
       # 🚀 Debug Step 1: Print Version from Cargo.toml
       - name: Print Cargo.toml Version
         run: cat src-tauri/Cargo.toml | grep '^version'
-      # 🚀 Debug Step 2: Print Version from tauri.conf.json (if exists)
-      - name: Print tauri.conf.json Version (if exists)
-        run: cat src-tauri/tauri.conf.json | grep '"version"' || echo "No version in tauri.conf.json"
       # 🚀 Debug Step 3: Print Latest Git Tag (expected version)
       - name: Print Latest Git Tag
         run: git describe --tags || echo "No tag found"
