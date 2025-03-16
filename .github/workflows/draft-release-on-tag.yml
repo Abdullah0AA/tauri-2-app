@@ -75,8 +75,14 @@ jobs:
         run: |
           echo "Cargo cache hit: ${{ steps.cargo-cache.outputs.cache-hit }}"
 
-      - name: Check if Cargo cache was restored
-        run: ls -lah ~/.cargo/registry || echo "Cargo cache not restored"
+          - name: Check if Cargo cache was restored
+          shell: bash
+          run: |
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              Get-ChildItem -Path $HOME\.cargo\registry -Force || echo "Cargo cache not restored"
+            else
+              ls -lah ~/.cargo/registry || echo "Cargo cache not restored"
+            fi
 
       - name: Cache Rust build artifacts
         id: rust-cache
@@ -91,8 +97,14 @@ jobs:
         run: |
           echo "Rust cache hit: ${{ steps.rust-cache.outputs.cache-hit }}"
 
-      - name: Check if Rust build artifacts were restored
-        run: ls -lah target/release/deps || echo "Rust build artifacts cache not restored"
+          - name: Check if Rust build artifacts were restored
+          shell: bash
+          run: |
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              Get-ChildItem -Path target/release/deps -Force || echo "Rust build artifacts cache not restored"
+            else
+              ls -lah target/release/deps || echo "Rust build artifacts cache not restored"
+            fi
 
       # 🚀 Debug Step 1: Print Version from Cargo.toml
       - name: Print Cargo.toml Version
