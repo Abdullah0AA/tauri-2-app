@@ -62,6 +62,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 🚀 Debug Step 1: Print Version from Cargo.toml
+      - name: Print Cargo.toml Version
+        run: cat src-tauri/Cargo.toml | grep '^version'
+      # 🚀 Debug Step 2: Print Version from tauri.conf.json (if exists)
+      - name: Print tauri.conf.json Version (if exists)
+        run: cat src-tauri/tauri.conf.json | grep '"version"' || echo "No version in tauri.conf.json"
+      # 🚀 Debug Step 3: Print Latest Git Tag (expected version)
+      - name: Print Latest Git Tag
+        run: git describe --tags || echo "No tag found"
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -83,6 +93,11 @@ jobs:
 
       - name: install frontend dependencies
         run: npm install # change this to npm, pnpm or bun depending on which one you use.
+
+      - name: Force Cargo Rebuild (to prevent stale versions)
+        run: |
+          cd src-tauri
+          cargo clean
 
       - name: Build App
         uses: tauri-apps/tauri-action@v0
