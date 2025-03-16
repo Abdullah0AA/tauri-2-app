@@ -52,14 +52,16 @@ try {
 
   // ✨ Final Step: Suggest commit commands
   console.log(
-    '\n🚀 **Version bump complete!** Before creating a tag, commit your changes:'
+    '\n🚀 **Version bump complete!** Before tagging, commit & push your changes:'
   )
   console.log('\n👉 Run the following commands:')
   console.log(
     `   git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock`
   )
   console.log(`   git commit -m "chore: bump version to ${newVersion}"`)
-  console.log(`   git tag v${newVersion}"\n`)
+  console.log(`   git push`)
+  console.log(`   git tag v${newVersion}`)
+  console.log(`   git push origin v${newVersion}\n`)
 } catch (error) {
   console.error('\n❌ Error bumping version:', error.message)
   process.exit(1)
