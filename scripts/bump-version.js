@@ -59,6 +59,7 @@ try {
     `   git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock`
   )
   console.log(`   git commit -m "chore: bump version to ${newVersion}"\n`)
+  console.log(`   git tag v${newVersion}"\n`)
 } catch (error) {
   console.error('\n❌ Error bumping version:', error.message)
   process.exit(1)
