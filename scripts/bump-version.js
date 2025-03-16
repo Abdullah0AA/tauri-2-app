@@ -50,7 +50,9 @@ try {
   console.log(`✅ Synced version to Cargo.toml: ${newVersion}`)
 
   // Step 4️⃣: Commit both changes together
-  execSync(`git add package.json ${cargoTomlPath}`, { stdio: 'inherit' })
+  console.log();
+  
+  execSync(`git add package.json package.lock.json ${cargoTomlPath}`, { stdio: 'inherit' })
   execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
     stdio: 'inherit',
   })
