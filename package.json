@@ -1,7 +1,7 @@
 {
   "name": "tauri-2-app",
   "private": true,
-  "version": "0.12.17",
+  "version": "0.12.18",
   "type": "module",
   "scripts": {
     "bump-version": "node ./scripts/bump-version.js",
