@@ -92,7 +92,9 @@ jobs:
         id: rust-cache
         uses: actions/cache@v3
         with:
-          path: target/release/deps
+          path: |
+            target/release/deps
+            target/release/build
           key: rust-${{ runner.os }}-${{ matrix.args }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             rust-${{ runner.os }}-${{ matrix.args }}-
@@ -146,6 +148,8 @@ jobs:
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
           args: ${{ matrix.args }}
+      - name: Debug Rust build output
+        run: ls -lah target/release/ || echo "Rust build directory is missing"
 
   publish-release:
     permissions:
