@@ -52,7 +52,7 @@ try {
   // Step 4️⃣: Commit both changes together
   console.log();
   
-  execSync(`git add package.json package.lock.json ${cargoTomlPath}`, { stdio: 'inherit' })
+  execSync(`git add package.json package-lock.json ${cargoTomlPath}`, { stdio: 'inherit' })
   execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
     stdio: 'inherit',
   })
