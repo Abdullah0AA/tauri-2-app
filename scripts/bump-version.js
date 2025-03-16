@@ -9,6 +9,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const packageJsonPath = path.resolve(__dirname, '../package.json')
 const cargoTomlPath = path.resolve(__dirname, '../src-tauri/Cargo.toml')
+const cargoTomlLockPath = path.resolve(__dirname, '../src-tauri/Cargo.lock')
 
 // Check if Git working directory is clean
 try {
@@ -50,9 +51,14 @@ try {
   console.log(`✅ Synced version to Cargo.toml: ${newVersion}`)
 
   // Step 4️⃣: Commit both changes together
-  console.log(cargoTomlPath);
-  
-  execSync(`git add package.json package-lock.json ${cargoTomlPath}`, { stdio: 'inherit' })
+  console.log(cargoTomlPath)
+
+  execSync(
+    `git add package.json package-lock.json ${cargoTomlPath} ${cargoTomlLockPath}`,
+    {
+      stdio: 'inherit',
+    }
+  )
   execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
     stdio: 'inherit',
   })
