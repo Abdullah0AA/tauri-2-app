@@ -84,9 +84,6 @@ jobs:
       - name: install frontend dependencies
         run: npm install # change this to npm, pnpm or bun depending on which one you use.
 
-      - name: Force Cargo to rebuild everything
-        run: cargo clean
-
       - name: Build App
         uses: tauri-apps/tauri-action@v0
         env:
