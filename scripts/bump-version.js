@@ -15,7 +15,9 @@ try {
   const status = execSync('git status --porcelain').toString().trim()
   if (status) {
     console.error('❌ Git working directory is not clean!')
-    console.error('👉 Please commit or stash your changes before bumping the version.')
+    console.error(
+      '👉 Please commit or stash your changes before bumping the version.'
+    )
     process.exit(1)
   }
 } catch (error) {
@@ -49,9 +51,13 @@ try {
   console.log(`✅ Version synced: ${newVersion}`)
 
   // ✨ Final Step: Suggest commit commands
-  console.log('\n🎉 Version bump complete! Before creating a tag, commit your changes:')
+  console.log(
+    '\n🔥Version bump complete! Before creating a tag, commit your changes:'
+  )
   console.log('👉 Run the following commands:')
-  console.log(`   git add package.json package-lock.json ${cargoTomlPath} ${cargoLockPath}`)
+  console.log(
+    `   git add package.json package-lock.json ${cargoTomlPath} ${cargoLockPath}`
+  )
   console.log(`   git commit -m "chore: bump version to ${newVersion}"`)
 } catch (error) {
   console.error('❌ Error bumping version:', error.message)
