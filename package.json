@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "sync-version": "node ./scripts/sync-version.js",
+    "postversion": "npm run sync-version",
     "dev": "vite",
-    "build": "npm run sync-version && tsc && vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"
   },
