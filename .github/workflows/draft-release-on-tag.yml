@@ -62,58 +62,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache Cargo dependencies
-        id: cargo-cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: cargo-${{ runner.os }}-${{ matrix.args }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            cargo-${{ runner.os }}-${{ matrix.args }}-
-            cargo-${{ runner.os }}-
-            cargo-
-
-      - name: Debug Cargo cache status
-        run: |
-          echo "Cargo cache hit: ${{ steps.cargo-cache.outputs.cache-hit }}"
-
-      - name: Check if Cargo cache was restored
-        shell: bash
-        run: |
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            Get-ChildItem -Path $HOME\.cargo\registry -Force || echo "Cargo cache not restored"
-          else
-            ls -lah ~/.cargo/registry || echo "Cargo cache not restored"
-          fi
-
-      - name: Cache Rust build artifacts
-        id: rust-cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            target/release/deps
-            target/release/build
-          key: rust-${{ runner.os }}-${{ matrix.args }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            rust-${{ runner.os }}-${{ matrix.args }}-
-            rust-${{ runner.os }}-
-            rust-
-
-      - name: Debug Rust cache status
-        run: |
-          echo "Rust cache hit: ${{ steps.rust-cache.outputs.cache-hit }}"
-
-      - name: Check if Rust build artifacts were restored
-        shell: bash
-        run: |
-          if [ "${{ runner.os }}" = "Windows" ]; then
-            Get-ChildItem -Path target/release/deps -Force || echo "Rust build artifacts cache not restored"
-          else
-            ls -lah target/release/deps || echo "Rust build artifacts cache not restored"
-          fi
-
       - name: Print Cargo.toml Version
         run: cat src-tauri/Cargo.toml | grep '^version'
 
@@ -124,6 +72,19 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Caching Rust Stuff
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            src-tauri/target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
