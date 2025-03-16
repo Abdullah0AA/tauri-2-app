@@ -3,7 +3,7 @@ import path from 'path'
 import { execSync } from 'child_process'
 import { fileURLToPath } from 'url'
 
-// Define paths
+// 📍 Define paths
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const packageJsonPath = path.resolve(__dirname, '../package.json')
@@ -14,21 +14,21 @@ const cargoLockPath = path.resolve(__dirname, '../src-tauri/Cargo.lock')
 try {
   const status = execSync('git status --porcelain').toString().trim()
   if (status) {
-    console.error('❌ Git working directory is not clean!')
+    console.error('\n❌ Git working directory is not clean!')
     console.error(
-      '👉 Please commit or stash your changes before bumping the version.'
+      '👉 Please commit or stash your changes before bumping the version.\n'
     )
     process.exit(1)
   }
 } catch (error) {
-  console.error('❌ Error checking Git status:', error.message)
+  console.error('\n❌ Error checking Git status:', error.message)
   process.exit(1)
 }
 
 // 🏷️ Get version bump type (patch, minor, major)
 const bumpType = process.argv[2]
 if (!['patch', 'minor', 'major'].includes(bumpType)) {
-  console.error('❌ Error: You must specify "patch", "minor", or "major".')
+  console.error('\n❌ Error: You must specify "patch", "minor", or "major".\n')
   process.exit(1)
 }
 
@@ -48,18 +48,18 @@ try {
   )
   fs.writeFileSync(cargoTomlPath, updatedCargoToml)
 
-  console.log(`✅ Version synced: ${newVersion}`)
+  console.log(`\n✅ Version synced: ${newVersion}`)
 
   // ✨ Final Step: Suggest commit commands
   console.log(
-    '\n🔥Version bump complete! Before creating a tag, commit your changes:'
+    '\n🚀 **Version bump complete!** Before creating a tag, commit your changes:'
   )
-  console.log('👉 Run the following commands:')
+  console.log('\n👉 Run the following commands:')
   console.log(
-    `   git add package.json package-lock.json ${cargoTomlPath} ${cargoLockPath}`
+    `   git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock`
   )
-  console.log(`   git commit -m "chore: bump version to ${newVersion}"`)
+  console.log(`   git commit -m "chore: bump version to ${newVersion}"\n`)
 } catch (error) {
-  console.error('❌ Error bumping version:', error.message)
+  console.error('\n❌ Error bumping version:', error.message)
   process.exit(1)
 }
