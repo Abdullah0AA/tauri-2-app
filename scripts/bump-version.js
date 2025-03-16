@@ -51,19 +51,12 @@ try {
   console.log(`✅ Synced version to Cargo.toml: ${newVersion}`)
 
   // Step 4️⃣: Commit both changes together
-  console.log(cargoTomlLockPath)
+  console.log('you can now commit the changes before creating a tag:')
 
-  execSync(
-    `git add package.json package-lock.json ${cargoTomlPath} ${cargoTomlLockPath}`,
-    {
-      stdio: 'inherit',
-    }
+  console.log(
+    `git add package.json package-lock.json ${cargoTomlPath} ${cargoTomlLockPath}`
   )
-  execSync(`git commit -m "chore: bump version to ${newVersion}"`, {
-    stdio: 'inherit',
-  })
-
-  console.log(`✅ Version bump committed: ${newVersion}`)
+  console.log(`git commit -m "chore: bump version to ${newVersion}"`)
 } catch (error) {
   console.error('❌ Error bumping version:', error.message)
   process.exit(1)
