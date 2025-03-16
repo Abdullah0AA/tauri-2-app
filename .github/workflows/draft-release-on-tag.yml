@@ -49,11 +49,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+          - platform: 'macos-latest'
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
+          - platform: 'macos-latest'
             args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
+          - platform: 'ubuntu-22.04'
             args: ''
           - platform: 'windows-latest'
             args: ''
@@ -69,71 +69,73 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-${{ runner.os }}-${{ matrix.args }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-${{ matrix.args }}-
+            cargo-${{ runner.os }}-
+            cargo-
 
       - name: Debug Cargo cache status
         run: |
           echo "Cargo cache hit: ${{ steps.cargo-cache.outputs.cache-hit }}"
 
-          - name: Check if Cargo cache was restored
-          shell: bash
-          run: |
-            if [[ "$RUNNER_OS" == "Windows" ]]; then
-              Get-ChildItem -Path $HOME\.cargo\registry -Force || echo "Cargo cache not restored"
-            else
-              ls -lah ~/.cargo/registry || echo "Cargo cache not restored"
-            fi
+      - name: Check if Cargo cache was restored
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            Get-ChildItem -Path $HOME\.cargo\registry -Force || echo "Cargo cache not restored"
+          else
+            ls -lah ~/.cargo/registry || echo "Cargo cache not restored"
+          fi
 
       - name: Cache Rust build artifacts
         id: rust-cache
         uses: actions/cache@v3
         with:
           path: target/release/deps
-          key: rust-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          key: rust-${{ runner.os }}-${{ matrix.args }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
+            rust-${{ runner.os }}-${{ matrix.args }}-
             rust-${{ runner.os }}-
+            rust-
 
       - name: Debug Rust cache status
         run: |
           echo "Rust cache hit: ${{ steps.rust-cache.outputs.cache-hit }}"
 
-          - name: Check if Rust build artifacts were restored
-          shell: bash
-          run: |
-            if [[ "$RUNNER_OS" == "Windows" ]]; then
-              Get-ChildItem -Path target/release/deps -Force || echo "Rust build artifacts cache not restored"
-            else
-              ls -lah target/release/deps || echo "Rust build artifacts cache not restored"
-            fi
+      - name: Check if Rust build artifacts were restored
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            Get-ChildItem -Path target/release/deps -Force || echo "Rust build artifacts cache not restored"
+          else
+            ls -lah target/release/deps || echo "Rust build artifacts cache not restored"
+          fi
 
-      # 🚀 Debug Step 1: Print Version from Cargo.toml
       - name: Print Cargo.toml Version
         run: cat src-tauri/Cargo.toml | grep '^version'
-      # 🚀 Debug Step 3: Print Latest Git Tag (expected version)
+
       - name: Print Latest Git Tag
         run: git describe --tags || echo "No tag found"
 
-      - name: install Rust stable
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - name: setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
-        # You can remove the one that doesn't apply to your app to speed up the workflow a bit.
 
-      - name: install frontend dependencies
-        run: npm install # change this to npm, pnpm or bun depending on which one you use.
+      - name: Install frontend dependencies
+        run: npm install
 
       - name: Build App
         uses: tauri-apps/tauri-action@v0
