@@ -51,7 +51,7 @@ try {
   console.log(`✅ Synced version to Cargo.toml: ${newVersion}`)
 
   // Step 4️⃣: Commit both changes together
-  console.log(cargoTomlPath)
+  console.log(cargoTomlLockPath)
 
   execSync(
     `git add package.json package-lock.json ${cargoTomlPath} ${cargoTomlLockPath}`,
